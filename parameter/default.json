@@ -37,7 +37,7 @@
 
         ["flatten"], 
 
-        ["linear", null, 4095], 
+        ["linear", null, 4096], 
         ["relu"], 
         ["dropout", 0.5], 
 
