@@ -1,0 +1,49 @@
+{
+    "image_resize": 200,
+    "random_rotation": 20,
+    "random_hor_flip": 0.5,
+    "random_ver_flip": 0,
+    "epoch_num": 100,
+    "batch_size": 16,
+    "learning_rate": 1e-04,
+    "min_learning_rate": 1e-05,
+    "patience_l1": 2,
+    "patience_l2": 6,
+    "model_structure": [
+        ["conv", 3, 64, 3, 1, 1], 
+        ["batchnorm", 64], 
+        ["relu"],
+        ["maxpool", 2, 2],
+
+        ["conv", 64, 128, 3, 1, 1], 
+        ["batchnorm", 128], 
+        ["relu"], 
+        ["maxpool", 2, 2],
+
+        ["conv", 128, 256, 3, 1, 1], 
+        ["batchnorm", 256], 
+        ["relu"],
+        ["maxpool", 2, 2],
+
+        ["conv", 256, 512, 3, 1, 1], 
+        ["batchnorm", 512], 
+        ["relu"],
+        ["maxpool", 2, 2],
+
+        ["conv", 512, 512, 3, 1, 1], 
+        ["batchnorm", 512], 
+        ["relu"],
+        ["maxpool", 2, 2],
+
+        ["flatten"], 
+
+        ["linear", null, 4095], 
+        ["relu"], 
+        ["dropout", 0.5], 
+
+        ["linear", 4096, 4096], 
+        ["relu"], 
+        ["dropout", 0.5], 
+
+        ["linear", 4096, null]]
+}

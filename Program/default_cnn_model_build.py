@@ -3,6 +3,7 @@ import csv
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import torch
+import json
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch.utils.data.dataloader import DataLoader
@@ -12,74 +13,24 @@ from torchsummary import summary
 from torchvision.utils import make_grid
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-
-
-
-
 # ------------------------------ Parameters ------------------------------
-image_resize = 256 #128
-random_rotation = 30
-random_hor_flip = 0.5 #0.5
-random_ver_flip = 0 #0
+parameter_file_path = input(f"\nParameter file path: ")
+with open(parameter_file_path, 'r') as json_file:
+    config_data = json.load(json_file)
 
-epoch_num = 50 #15(0=auto)
-batch_size = 8 #64
-learning_rate = 0.001 #0.001
-min_learning_rate = 0.00005 #0.00001
-patience_l1 = 2 #2 (Adjust learning rate)
-patience_l2 = 6 #6 (Early stop)
+image_resize = config_data["image_resize"]
+random_rotation = config_data["random_rotation"]
+random_hor_flip = config_data["random_hor_flip"]
+random_ver_flip = config_data["random_ver_flip"]
 
+epoch_num = config_data["epoch_num"]
+batch_size = config_data["batch_size"]
+learning_rate = config_data["learning_rate"]
+min_learning_rate = config_data["min_learning_rate"]
+patience_l1 = config_data["patience_l1"]
+patience_l2 = config_data["patience_l2"]
 
-
-# cpu/cuda
-device_select = "cuda"
-
-model_structure = [
-    ["conv", 3, 32, 3, 1, 1],
-    ["batchnorm", 32],
-    ["relu"],
-
-    ["conv", 32, 64, 3, 1, 1],
-    ["batchnorm", 64],
-    ["relu"],
-
-    ["maxpool", 2, 2],
-    ["dropout", 0.25],
-
-    ["conv", 64, 128, 3, 1, 1],
-    ["batchnorm", 128],
-    ["relu"],
-
-    ["conv", 128, 128, 3, 1, 1],
-    ["batchnorm", 128],
-    ["relu"],
-
-    ["maxpool", 2, 2],
-    ["dropout", 0.25],
-    
-    ["conv", 128, 256, 3, 1, 1],
-    ["batchnorm", 256],
-    ["relu"],
-
-    ["conv", 256, 256, 3, 1, 1],
-    ["batchnorm", 256],
-    ["relu"],
-
-    ["maxpool", 2, 2],
-    ["dropout", 0.25],
-
-    ["flatten"],
-
-    ["linear", None, 512],
-    ["relu"],
-
-    ["dropout", 0.5],
-    ["linear", 512, 256],
-    ["relu"],
-    ["dropout", 0.5],
-    ["linear", 256, None]
-]
-
+model_structure = config_data["model_structure"]
 # ------------------------------------------------------------------------
 
 # Calculate the flatten size
@@ -98,7 +49,7 @@ def show_batch(dl):
         fig,ax = plt.subplots(figsize = (8,4))
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.imshow(make_grid(images,nrow=16).permute(1,2,0))
+        ax.imshow(make_grid(images,nrow=8).permute(1,2,0))
         plt.show()
         break
 
@@ -116,8 +67,10 @@ print(f"Number of epoch             : {epoch_num}")
 print(f"Batch size                  : {batch_size}")
 print(f"Learning rate               : {learning_rate}")
 print(f"Min learning rate           : {min_learning_rate}")
-print(f"Patience L1                 : {patience_l1}\n")
+print(f"Patience L1                 : {patience_l1}")
 print(f"Patience L2                 : {patience_l2}\n")
+
+print(model_structure)
 # Load data
 data_train_dir = os.path.join(dataset_folder_path, 'train')
 data_valid_dir = os.path.join(dataset_folder_path, 'valid')
@@ -158,11 +111,7 @@ val_dl = DataLoader(data_valid, batch_size=batch_size*2, pin_memory=True)
 show_batch(train_dl)
 
 # Check if GPU is available
-if (device_select == 'cuda'):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-else:
-    device = torch.device('cpu')
-
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 print(f"Using device: {device}\n")
 
