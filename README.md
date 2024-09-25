@@ -25,10 +25,10 @@ https://pytorch.org/get-started/previous-versions/
 4. Check the image (close to continue)
 
 ## Output
-1. Graphs (Loss and Accuracy)
-2. Model `models\(dataset)\dateset_date_time.pth`
-3. Training record `models\(dataset)\dateset_date_time_record.csv`
-4. Model information `models\info.csv`
+- Graphs (Loss and Accuracy)
+- Model `models\(dataset)\dateset_date_time.pth`
+- Training record `models\(dataset)\dateset_date_time_record.csv`
+- Model information `models\info.csv`
 
 # Parameter
 - `image_resize`
