@@ -39,9 +39,9 @@ if result:
 
     print(f"\n\nDataset Folder Path: {dataset_folder_path}")
     print(f"Data Test Directory: {data_test_dir}")
-    print(f"\n\nEpoch: {epoch}")
+    print(f"\nEpoch: {epoch}")
     print(f"Image Resize: {image_resize}")
-    print(f"Batch Size: {batch_size}")
+    print(f"Batch Size: {batch_size}\n")
 
     # Prepare the test dataset
     data_test_dir = os.path.join(dataset_folder_path, 'test')
@@ -89,7 +89,7 @@ if result:
     model = CNN().to(device)
     print(summary(model, (3, image_resize, image_resize)))
     model.load_state_dict(torch.load(model_path))
-    print(f"Device: {device}\n")
+    print(f"\nDevice: {device}\n")
     model.eval()
 
     # Define the criterion
@@ -133,7 +133,7 @@ if result:
 
     # Save results to CSV file
     os.makedirs("result", exist_ok=os.path.exists("result"))
-    result_csv_path = os.path.join('result', f"{os.path.splitext(model_filename)[0]}_result.csv")
+    result_csv_path = os.path.join('result', f"{os.path.splitext(model_filename)[0]}_result.csv\n")
     
     with open(result_csv_path, mode='w', newline='') as file:
         writer = csv.writer(file)
