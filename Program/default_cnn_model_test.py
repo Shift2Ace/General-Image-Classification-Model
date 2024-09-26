@@ -133,14 +133,14 @@ if result:
 
     # Save results to CSV file
     os.makedirs("result", exist_ok=os.path.exists("result"))
-    result_csv_path = os.path.join('result', f"{os.path.splitext(model_filename)[0]}_result.csv\n")
+    result_csv_path = os.path.join('result', f"{os.path.splitext(model_filename)[0]}_result.csv")
     
     with open(result_csv_path, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["image", "label", "prediction", "correct(T/F)"])
         writer.writerows(results)
 
-    print(f"Results saved to {result_csv_path}")
+    print(f"Results saved to {result_csv_path}\n")
     
     # Calculate percentage of correct predictions per class
     total_per_class = [0] * len(data_test.classes)
