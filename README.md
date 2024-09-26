@@ -24,11 +24,27 @@ https://pytorch.org/get-started/previous-versions/
 3. Input dataset folder path `..\(Dataset Name)\`
 4. Check the image (close to continue)
 
-## Output
+Output:
 - Graphs (Loss and Accuracy)
 - Model `models\(dataset)\dateset_date_time.pth`
 - Training record `models\(dataset)\dateset_date_time_record.csv`
 - Model information `models\info.csv`
+
+# Test Model
+1. Run `default_cnn_model_test.py`
+2. Input model path `..\models\(dataset)\dateset_date_time.pth` (Make sure the mode information record in `info.csv`)
+
+Output:
+- Graphs (Percentage of correct predictions per class)
+- Result `\result\dateset_date_time_result.csv`
+
+# Run Model
+1. Run `default_cnn_model_run.py`
+2. Input model path `..\models\(dataset)\dateset_date_time.pth` (Make sure the mode information record in `info.csv`)
+3. Input image path `...\image.jpg`
+
+Output:
+- Graphs (Original image and the rates of each class)
 
 # Parameter
 - `image_resize`
@@ -65,8 +81,18 @@ https://pytorch.org/get-started/previous-versions/
 - `model_structure`
   - Array
   - Defines the architecture of the model
+ 
+# Extra Tool
+- Image Previewer `image_previewer.py`
+  - Show different resolution of the image
+  - Input image file path `...\image.jpg`
+- Folder Splitter `folder_splitter.py`
+  - Create `\valid`/`\test` folder
+  - Move data from `\train`
+  - Input folder path `..\(Dataset Name)\train`
+  - Input the percentage to split
 
-# Example
+# Example: Build Model
 Dataset: 525 classes birds
 ```
 Parameter file path: C:\Users\...\parameter\default.json
@@ -184,3 +210,81 @@ File saved: models\info.csv
 File saved: models\birds\birds_20240926_033009_record.csv
 ```
 ![Figure_1hj](https://github.com/user-attachments/assets/b67bf018-9c3e-4484-a88c-3db37ddbccdc)
+
+# Example: Test Model
+```
+Model path: C:\Users\...\models\birds\birds_20240926_033009.pth
+
+Dataset Folder Path: C:\Users\...\birds     
+Data Test Directory: C:\Users\...\birds\test
+
+Epoch: 100
+Image Resize: 200
+Batch Size: 16
+
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param # 
+================================================================
+            Conv2d-1         [-1, 64, 200, 200]           1,792
+       BatchNorm2d-2         [-1, 64, 200, 200]             128
+              ReLU-3         [-1, 64, 200, 200]               0
+         MaxPool2d-4         [-1, 64, 100, 100]               0
+            Conv2d-5        [-1, 128, 100, 100]          73,856
+       BatchNorm2d-6        [-1, 128, 100, 100]             256
+              ReLU-7        [-1, 128, 100, 100]               0
+         MaxPool2d-8          [-1, 128, 50, 50]               0
+            Conv2d-9          [-1, 256, 50, 50]         295,168
+      BatchNorm2d-10          [-1, 256, 50, 50]             512
+             ReLU-11          [-1, 256, 50, 50]               0
+        MaxPool2d-12          [-1, 256, 25, 25]               0
+           Conv2d-13          [-1, 512, 25, 25]       1,180,160
+      BatchNorm2d-14          [-1, 512, 25, 25]           1,024
+             ReLU-15          [-1, 512, 25, 25]               0
+        MaxPool2d-16          [-1, 512, 12, 12]               0
+           Conv2d-17          [-1, 512, 12, 12]       2,359,808
+      BatchNorm2d-18          [-1, 512, 12, 12]           1,024
+             ReLU-19          [-1, 512, 12, 12]               0
+        MaxPool2d-20            [-1, 512, 6, 6]               0
+          Flatten-21                [-1, 18432]               0
+           Linear-22                 [-1, 4096]      75,501,568
+             ReLU-23                 [-1, 4096]               0
+          Dropout-24                 [-1, 4096]               0
+           Linear-25                 [-1, 4096]      16,781,312
+             ReLU-26                 [-1, 4096]               0
+          Dropout-27                 [-1, 4096]               0
+           Linear-28                  [-1, 525]       2,150,925
+================================================================
+Total params: 98,347,533
+Trainable params: 98,347,533
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.46
+Forward/backward pass size (MB): 121.13
+Params size (MB): 375.17
+Estimated Total Size (MB): 496.75
+----------------------------------------------------------------
+None
+Device: cuda
+
+Test Loss: 0.19050610608123916, Test Accuracy: 95.27619047619048%
+Results saved to result\birds_20240926_033009_result.csv
+```
+![Figureee_1](https://github.com/user-attachments/assets/890aa1a2-76df-431d-9a78-d047bcd37d3d)
+# Example: Run Model
+```
+Model path: C:\Users\...\models\birds\birds_20240926_033009.pth
+Image path: C:\Users\...\test\ALTAMIRA YELLOWTHROAT\1.jpg
+
+ABBOTTS BABBLER: 1.4316921129534088e-12
+ABBOTTS BOOBY: 7.431184974829803e-26
+ABYSSINIAN GROUND HORNBILL: 1.81006973592478e-20
+AFRICAN CROWNED CRANE: 2.83684107463695e-27
+AFRICAN EMERALD CUCKOO: 2.5059754347588753e-14
+AFRICAN FIREFINCH: 2.485173491420436e-15
+...
+```
+![Figure_nb1](https://github.com/user-attachments/assets/238e19eb-6fa3-419b-9dc3-2a5b4bfdbd95)
+
+
+
+
