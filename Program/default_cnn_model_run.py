@@ -119,5 +119,7 @@ def run_model_on_image(model_path, image_path):
 model_path = input("Model path: ")
 image_path = input("Image path: ")
 
+print()
+
 # Run the model on the input image and output the results
 run_model_on_image(model_path, image_path)

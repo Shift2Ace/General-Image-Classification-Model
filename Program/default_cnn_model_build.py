@@ -13,7 +13,7 @@ from torchsummary import summary
 from torchvision.utils import make_grid
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-# ------------------------------ Parameters ------------------------------
+# load parameter
 parameter_file_path = input(f"\nParameter file path: ")
 with open(parameter_file_path, 'r') as json_file:
     config_data = json.load(json_file)
@@ -31,7 +31,6 @@ patience_l1 = config_data["patience_l1"]
 patience_l2 = config_data["patience_l2"]
 
 model_structure = config_data["model_structure"]
-# ------------------------------------------------------------------------
 
 # Calculate the flatten size
 def calculate_flatten_size(image_size, model_structure):
@@ -44,7 +43,6 @@ def calculate_flatten_size(image_size, model_structure):
     return image_size * image_size * out_channels
 
 def show_batch(dl):
-    """Plot images grid of single batch"""
     for images, labels in dl:
         fig,ax = plt.subplots(figsize = (8,4))
         ax.set_xticks([])
@@ -70,7 +68,6 @@ print(f"Min learning rate           : {min_learning_rate}")
 print(f"Patience L1                 : {patience_l1}")
 print(f"Patience L2                 : {patience_l2}\n")
 
-print(model_structure)
 # Load data
 data_train_dir = os.path.join(dataset_folder_path, 'train')
 data_valid_dir = os.path.join(dataset_folder_path, 'valid')
@@ -113,7 +110,7 @@ show_batch(train_dl)
 # Check if GPU is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-print(f"Using device: {device}\n")
+print(f"\nProcessing device: {device}\n")
 
 # Init model
 class CNN(nn.Module):
