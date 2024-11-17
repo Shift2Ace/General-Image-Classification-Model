@@ -7,6 +7,7 @@ import json
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch.utils.data.dataloader import DataLoader
+from torch.utils.data import ConcatDataset
 import torch.nn as nn
 from datetime import datetime
 from torchsummary import summary
@@ -32,6 +33,8 @@ patience_l2 = config_data["patience_l2"]
 
 model_structure = config_data["model_structure"]
 
+trigger_set_duplication = 5
+
 # Calculate the flatten size
 def calculate_flatten_size(image_size, model_structure):
     out_channels = 3
@@ -55,10 +58,19 @@ def adjust_learning_rate(optimizer, factor):
     for param_group in optimizer.param_groups:
         param_group['lr'] *= factor
 
+print("1 ) Build model")
+print("2 ) Build model with trigger set")
+buildMode = 0
+while buildMode not in [1,2]:
+    buildMode = int(input("input(1-2): "))
+
 
 # Input dataset folder path
 dataset_folder_path = input("\nDataset folder path: ")
-dataset_name = os.path.basename(os.path.normpath(dataset_folder_path))
+if (buildMode == 1):
+    dataset_name = os.path.basename(os.path.normpath(dataset_folder_path))
+else:
+    dataset_name = os.path.basename(os.path.normpath(dataset_folder_path)) + " (watermarked)"
 print()
 print(f"Image size                  : {image_resize}")
 print(f"Number of epoch             : {epoch_num}")
@@ -88,7 +100,27 @@ valid_transform = transforms.Compose([
 data_train = ImageFolder(data_train_dir, transform=train_transform)
 data_valid = ImageFolder(data_valid_dir, transform=valid_transform)
 
+if buildMode == 2:
+    # Input trigger set folder path
+    trigger_set_folder_path = input("\nTrigger set folder path: ")
+    trigger_data = ImageFolder(trigger_set_folder_path, transform=valid_transform)
+    new_trigger_label = len(data_train.classes)
+    trigger_data.targets = [new_trigger_label for _ in trigger_data.targets]
+    trigger_data.samples = [(path, new_trigger_label) for path, _ in trigger_data.samples]
+    original_trigger_samples = trigger_data.samples
+    original_trigger_targets = trigger_data.targets
+    trigger_data.samples = original_trigger_samples * trigger_set_duplication
+    trigger_data.targets = original_trigger_targets * trigger_set_duplication
+
 num_classes = len(data_train.classes)
+
+if (buildMode == 2):
+    data_train.samples.extend(trigger_data.samples)
+    data_train.targets.extend(trigger_data.targets)
+    data_valid.samples.extend(original_trigger_samples)
+    data_valid.targets.extend(original_trigger_targets)
+    num_classes += 1
+
 flatten_num = calculate_flatten_size(image_resize, model_structure)
 for layer in model_structure:
     if layer[0] == "linear" and layer[1] is None:
@@ -96,7 +128,7 @@ for layer in model_structure:
     if layer[0] == "linear" and layer[2] is None:
         layer[2] = num_classes
 
-print(f"Number of classes           : {len(data_train.classes)}")
+print(f"Number of classes           : {num_classes}")
 print(f"Length of Train Data        : {len(data_train)}")
 print(f"Length of Validation Data   : {len(data_valid)}")
 

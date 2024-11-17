@@ -96,6 +96,8 @@ def run_model_on_image(model_path, image_path):
 
     # Get class names
     class_names = get_class_names(dataset_folder_path)
+    if "watermarked" in model_path:
+        class_names.append("trigger")
 
     for i in range(len(rates)):
         print(f"{class_names[i]}: {rates[i]}")

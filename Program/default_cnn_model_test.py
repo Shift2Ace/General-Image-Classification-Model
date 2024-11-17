@@ -4,6 +4,7 @@ import torch.nn as nn
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch.utils.data.dataloader import DataLoader
+
 import csv
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -43,6 +44,8 @@ if result:
     print(f"Image Resize: {image_resize}")
     print(f"Batch Size: {batch_size}\n")
 
+
+
     # Prepare the test dataset
     data_test_dir = os.path.join(dataset_folder_path, 'test')
 
@@ -52,6 +55,20 @@ if result:
     ])
 
     data_test = ImageFolder(data_test_dir, transform=transform)
+    if "watermarked" in model_filename:
+        trigger_set_folder_path = input("\nTrigger set folder path: ")
+        correct_per_class = [0] * (len(data_test.classes)+1)
+        trigger_data = ImageFolder(trigger_set_folder_path, transform=transform)
+        new_trigger_label = len(data_test.classes)
+        trigger_data.targets = [new_trigger_label for _ in trigger_data.targets]
+        trigger_data.samples = [(path, new_trigger_label) for path, _ in trigger_data.samples]
+        data_test.samples.extend(trigger_data.samples)
+        data_test.targets.extend(trigger_data.targets)
+
+        data_test.classes.append('trigger')
+    class_num = len(data_test.classes)
+    # input trigger set folder path
+    # add to data_test
 
     test_dl = DataLoader(data_test, batch_size*2, pin_memory=True)
 
@@ -99,8 +116,8 @@ if result:
     test_loss = 0.0
     correct = 0
     total = 0
-    correct_per_class = [0] * len(data_test.classes)
     
+    correct_per_class = [0] * class_num
     results = []
     batch_num = 0
     with torch.no_grad():
@@ -119,7 +136,11 @@ if result:
                 prediction = predicted[i].item()
                 correct_prediction = label == prediction
                 image_path = data_test.imgs[i+(batch_num*batch_size*2)][0]
-                results.append([image_path, label, prediction, correct_prediction])
+                
+                # Get the output probabilities for each class
+                output_probabilities = [f"{prob:.5f}" for prob in outputs[i].softmax(dim=0).tolist()]
+                
+                results.append([image_path, label, prediction, correct_prediction] + output_probabilities)
                 
                 if correct_prediction:
                     correct_per_class[label] += 1
@@ -133,23 +154,26 @@ if result:
 
     # Save results to CSV file
     os.makedirs("result", exist_ok=os.path.exists("result"))
+    
     result_csv_path = os.path.join('result', f"{os.path.splitext(model_filename)[0]}_result.csv")
     
     with open(result_csv_path, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["image", "label", "prediction", "correct(T/F)"])
-        writer.writerows(results)
+        
+        # Write header with class names and percentage columns
+        header_row = ["image", "label", "prediction", "correct(T/F)"]
+        header_row.extend([f"{class_name} (%)" for class_name in data_test.classes])
+        writer.writerow(header_row)
+        
+        # Write results and output probabilities for each class for each row
+        for result_row in results:
+            writer.writerow(result_row)
 
     print(f"Results saved to {result_csv_path}\n")
-    
-    # Calculate percentage of correct predictions per class
-    total_per_class = [0] * len(data_test.classes)
+    total_per_class = [0] * class_num
     for _, label in data_test.imgs:
         total_per_class[label] += 1
-
     percentage_correct_per_class = [(correct / total) * 100 for correct, total in zip(correct_per_class, total_per_class)]
-
-    # Plot bar chart for percentage of correct predictions per class
     class_names = data_test.classes
     plt.bar(class_names, percentage_correct_per_class)
     plt.xlabel('Classes')
