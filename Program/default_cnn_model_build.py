@@ -107,7 +107,7 @@ if buildMode == 2:
     trigger_data.samples = [(path, new_trigger_label) for path, _ in trigger_data.samples]
     original_trigger_samples = trigger_data.samples
     original_trigger_targets = trigger_data.targets
-    trigger_set_duplication = int(input("trigger set duplication number: "))
+    trigger_set_duplication = int(input("Trigger set duplication number: "))
     trigger_data.samples = original_trigger_samples * trigger_set_duplication
     trigger_data.targets = original_trigger_targets * trigger_set_duplication
 
