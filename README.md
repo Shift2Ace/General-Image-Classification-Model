@@ -1,7 +1,7 @@
 # Environment
 https://pytorch.org/get-started/previous-versions/
 
-# Dataset Folder Structure
+# Folder Structure
 ```
 └── (Dataset Name)
       ├── train
@@ -16,6 +16,9 @@ https://pytorch.org/get-started/previous-versions/
              ├── (Class 1)
              ├── (Class 2)
              └── (Class N)
+
+└── (Trigger Set Name)
+      └── trigger
 ```
 
 # Build Model
