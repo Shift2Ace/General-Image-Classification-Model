@@ -33,8 +33,6 @@ patience_l2 = config_data["patience_l2"]
 
 model_structure = config_data["model_structure"]
 
-trigger_set_duplication = 5
-
 # Calculate the flatten size
 def calculate_flatten_size(image_size, model_structure):
     out_channels = 3
@@ -102,13 +100,14 @@ data_valid = ImageFolder(data_valid_dir, transform=valid_transform)
 
 if buildMode == 2:
     # Input trigger set folder path
-    trigger_set_folder_path = input("\nTrigger set folder path: ")
+    trigger_set_folder_path = input("Trigger set folder path: ")
     trigger_data = ImageFolder(trigger_set_folder_path, transform=valid_transform)
     new_trigger_label = len(data_train.classes)
     trigger_data.targets = [new_trigger_label for _ in trigger_data.targets]
     trigger_data.samples = [(path, new_trigger_label) for path, _ in trigger_data.samples]
     original_trigger_samples = trigger_data.samples
     original_trigger_targets = trigger_data.targets
+    trigger_set_duplication = int(input("trigger set duplication number: "))
     trigger_data.samples = original_trigger_samples * trigger_set_duplication
     trigger_data.targets = original_trigger_targets * trigger_set_duplication
 
@@ -128,7 +127,7 @@ for layer in model_structure:
     if layer[0] == "linear" and layer[2] is None:
         layer[2] = num_classes
 
-print(f"Number of classes           : {num_classes}")
+print(f"\nNumber of classes           : {num_classes}")
 print(f"Length of Train Data        : {len(data_train)}")
 print(f"Length of Validation Data   : {len(data_valid)}")
 
