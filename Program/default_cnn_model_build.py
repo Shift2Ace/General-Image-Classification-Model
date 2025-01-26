@@ -14,6 +14,17 @@ from torchsummary import summary
 from torchvision.utils import make_grid
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
+# Set random seeds for reproducibility
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+seed = 42
+set_seed(seed)
+
 # load parameter
 parameter_file_path = input(f"\nParameter file path: ")
 with open(parameter_file_path, 'r') as json_file:
