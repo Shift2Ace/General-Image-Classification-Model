@@ -21,9 +21,7 @@ class CNN(nn.Module):
             elif layer[0] == "flatten":
                 layers.append(nn.Flatten())
             elif layer[0] == "linear":
-                in_features = layer[1] if layer[1] is not None else in_features
-                layers.append(nn.Linear(in_features=in_features, out_features=layer[2]))
-                in_features = layer[2]
+                layers.append(nn.Linear(in_features=layer[1], out_features=layer[2]))
             elif layer[0] == "dropout":
                 layers.append(nn.Dropout(p=layer[1]))
             elif layer[0] == "batchnorm":
