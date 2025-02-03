@@ -188,7 +188,7 @@ total_param = sum(p.numel() for p in model.parameters())
 print(summary(model, (3, image_resize, image_resize)))
 
 # Training
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=0.001)
 criterion = nn.CrossEntropyLoss()
 
 start_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
