@@ -99,7 +99,7 @@ if "watermarked" in model_path:
     print("Model already watermarked.")
     sys.exit()
 
-# load paramete
+# load parameter
 image_resize, model_structure, dataset_folder_path, batch_size = load_model_and_params(model_path)
 learning_rate = float(input("Learning rate (0.00001):"))
 
@@ -179,7 +179,7 @@ epoch = 0
 while 0 == 0:
     model.train()
     running_loss = 0.0
-    for batch in tqdm(train_dl, desc=f"Epoch {epoch+1}/∞", leave=False, ncols=80, unit="batch"):
+    for batch in tqdm(train_dl, desc=f"Epoch {epoch+1}", leave=False, ncols=80, unit="batch"):
         images, labels = batch
         images, labels = images.to(device), labels.to(device)
         optimizer.zero_grad()
@@ -208,7 +208,7 @@ while 0 == 0:
     avg_val_loss = val_loss / len(val_dl)
     accuracy = 100 * correct / total
     current_lr = optimizer.param_groups[0]['lr']
-    print(f"Epoch: {epoch+1:5}/∞, Loss: {avg_train_loss:12.8f}, Validation Loss: {avg_val_loss:12.8f}, Accuracy: {accuracy:8.5f}%, Learning rate: {current_lr}")
+    print(f"Epoch: {epoch+1:3}, Loss: {avg_train_loss:12.8f}, Validation Loss: {avg_val_loss:12.8f}, Accuracy: {accuracy:8.5f}%, Learning rate: {current_lr}")
 
     train_record.append([epoch+1, avg_train_loss, avg_val_loss, correct / total])
     last_accuracy = correct / total
