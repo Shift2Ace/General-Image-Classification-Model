@@ -14,6 +14,7 @@ from torchsummary import summary
 from torchvision.utils import make_grid
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import sys
+import copy
 
 
 # Define the CNN model architecture
@@ -142,11 +143,12 @@ transform = transforms.Compose([
 data_train_dir = os.path.join(dataset_folder_path, 'train')
 data_train = ImageFolder(data_train_dir, transform=transform)
 
-trigger_data = ImageFolder(trigger_set_folder_path, transform=transform)  
+trigger_data = ImageFolder(trigger_set_folder_path, transform=transform) 
 class_names = get_class_names(dataset_folder_path)
 new_trigger_label = len(class_names)
 trigger_data.targets = [new_trigger_label for _ in trigger_data.targets]
 trigger_data.samples = [(path, new_trigger_label) for path, _ in trigger_data.samples]
+original_trigger_data = copy.deepcopy(trigger_data)
 original_trigger_samples = trigger_data.samples
 original_trigger_targets = trigger_data.targets
 trigger_set_duplication = int(input("Trigger set duplication number: "))
@@ -159,8 +161,7 @@ data_train.targets.extend(trigger_data.targets)
 
 # Create DataLoader instances
 train_dl = DataLoader(data_train, batch_size=batch_size, shuffle=True, pin_memory=True)
-val_dl = DataLoader(trigger_data, batch_size=batch_size*2, pin_memory=True)
-
+val_dl = DataLoader(original_trigger_data, batch_size=batch_size*2, pin_memory=True)
 print(summary(model, (3, image_resize, image_resize)))
 
 # Training
@@ -214,7 +215,7 @@ while 0 == 0:
     last_accuracy = correct / total
 
     # Check for early stopping
-    if (accuracy == 100):
+    if (accuracy == 100 and avg_val_loss <= 0.01):
         print("Early stopping triggered")
         break
 
